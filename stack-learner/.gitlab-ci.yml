@@ -1,0 +1,31 @@
+image: docker:stable
+
+services:
+  - docker:dind
+
+variables:
+  IMAGE_NAME: registry.gitlab.com/$CI_PROJECT_PATH
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_DRIVER: overlay2
+
+before_script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+
+build-image:
+  stage: build
+  script:
+    - docker pull $IMAGE_NAME:latest || true
+    - docker build --cache-from $IMAGE_NAME:latest --tag $IMAGE_NAME:$CI_COMMIT_REF_NAME --tag $IMAGE_NAME:latest .
+    - docker push $IMAGE_NAME:$CI_COMMIT_REF_NAME
+    - docker push $IMAGE_NAME:latest
+
+build-image-tag:
+  image: docker:stable
+  stage: build
+  script:
+    - docker pull $IMAGE_NAME:latest || true
+    - docker build --cache-from $IMAGE_NAME:latest --tag $IMAGE_NAME:$CI_COMMIT_TAG .
+    - docker push $IMAGE_NAME:$CI_COMMIT_TAG
+  only:
+    - tags
+

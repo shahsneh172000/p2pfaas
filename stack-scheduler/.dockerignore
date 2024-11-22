@@ -1,0 +1,5 @@
+src/scheduler/vendor
+src/scheduler/data
+bin
+pkg
+.balena
