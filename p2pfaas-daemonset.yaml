@@ -1,0 +1,185 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: p2pfaas-data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi # Adjust storage size as needed
+
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: scheduler
+  labels:
+    app: scheduler
+spec:
+  selector:
+    matchLabels:
+      app: scheduler
+  template:
+    metadata:
+      labels:
+        app: scheduler
+    spec:
+      containers:
+      - name: scheduler
+        image: shahsneh17/stack-scheduler:latest # Replace with your actual image reference
+        ports:
+        - containerPort: 18080
+          name: http
+        env:
+        - name: P2PFAAS_LOG_ENV
+          value: "production"
+        - name: P2PFAAS_DEV_ENV
+          value: "production"
+        volumeMounts:
+        - name: p2pfaas-data
+          mountPath: /data
+      volumes:
+      - name: p2pfaas-data
+        persistentVolumeClaim:
+          claimName: p2pfaas-data-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scheduler-service
+spec:
+  type: ClusterIP
+  selector:
+    app: scheduler
+  ports:
+    - port: 18080
+      targetPort: 18080
+      protocol: TCP
+
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: discovery
+  labels:
+    app: discovery
+spec:
+  selector:
+    matchLabels:
+      app: discovery
+  template:
+    metadata:
+      labels:
+        app: discovery
+    spec:
+      containers:
+      - name: discovery
+        image: shahsneh17/stack-discovery:latest # Replace with your actual image reference
+        ports:
+        - containerPort: 19000
+          name: http
+        env:
+        - name: P2PFAAS_LOG_ENV
+          value: "production"
+        - name: P2PFAAS_DEV_ENV
+          value: "production"
+        volumeMounts:
+        - name: p2pfaas-data
+          mountPath: /data
+      volumes:
+      - name: p2pfaas-data
+        persistentVolumeClaim:
+          claimName: p2pfaas-data-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: discovery-service
+spec:
+  type: ClusterIP
+  selector:
+    app: discovery
+  ports:
+    - port: 19000
+      targetPort: 19000
+      protocol: TCP
+
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: learner
+  labels:
+    app: learner
+spec:
+  selector:
+    matchLabels:
+      app: learner
+  template:
+    metadata:
+      labels:
+        app: learner
+    spec:
+      containers:
+      - name: learner
+        image: shahsneh17/stack-learner:latest # Replace with your actual image reference
+        ports:
+        - containerPort: 19020
+          name: http
+        env:
+        - name: P2PFAAS_LOG_ENV
+          value: "production"
+        - name: P2PFAAS_DEV_ENV
+          value: "production"
+        volumeMounts:
+        - name: p2pfaas-data
+          mountPath: /data
+      volumes:
+      - name: p2pfaas-data
+        persistentVolumeClaim:
+          claimName: p2pfaas-data-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: learner-service
+spec:
+  type: ClusterIP
+  selector:
+    app: learner
+  ports:
+    - port: 19020
+      targetPort: 19020
+      protocol: TCP
+
+---
+# Uncomment and update the following DaemonSet and Service if needed
+# apiVersion: apps/v1
+# kind: DaemonSet
+# metadata:
+#   name: fn-pigo
+#   labels:
+#     app: fn-pigo
+# spec:
+#   selector:
+#     matchLabels:
+#       app: fn-pigo
+#   template:
+#     metadata:
+#       labels:
+#         app: fn-pigo
+#     spec:
+#       containers:
+#       - name: fn-pigo
+#         image: esimov/pigo-openfaas :a847f38aee73 # Replace with your actual image reference
+#         env:
+#         - name: output_mode
+#           value: "image"
+#         - name: input_mode
+#           value: "image"
+
+# Add similar definitions for other services as needed.

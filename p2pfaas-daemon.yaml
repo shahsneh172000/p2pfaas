@@ -1,0 +1,175 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: p2pfaas
+
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: scheduler
+  namespace: p2pfaas
+spec:
+  selector:
+    matchLabels:
+      app: scheduler
+  template:
+    metadata:
+      labels:
+        app: scheduler
+    spec:
+      containers:
+      - name: scheduler
+        image: shahsneh17/scheduler:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: P2PFAAS_LOG_ENV
+          value: production
+        - name: P2PFAAS_DEV_ENV
+          value: production
+        ports:
+        - containerPort: 18080
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      volumes:
+      - name: data
+        emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scheduler
+  namespace: p2pfaas
+spec:
+  selector:
+    app: scheduler
+  ports:
+    - protocol: TCP
+      port: 18080
+      targetPort: 18080
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: discovery
+  namespace: p2pfaas
+spec:
+  selector:
+    matchLabels:
+      app: discovery
+  template:
+    metadata:
+      labels:
+        app: discovery
+    spec:
+      containers:
+      - name: discovery
+        image: shahsneh17/discovery:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: P2PFAAS_LOG_ENV
+          value: production
+        - name: P2PFAAS_DEV_ENV
+          value: production
+        ports:
+        - containerPort: 19000
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      volumes:
+      - name: data
+        emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: discovery
+  namespace: p2pfaas
+spec:
+  selector:
+    app: discovery
+  ports:
+    - protocol: TCP
+      port: 19000
+      targetPort: 19000
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: learner
+  namespace: p2pfaas
+spec:
+  selector:
+    matchLabels:
+      app: learner
+  template:
+    metadata:
+      labels:
+        app: learner
+    spec:
+      containers:
+      - name: learner
+        image: shahsneh17/learner:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: P2PFAAS_LOG_ENV
+          value: production
+        - name: P2PFAAS_DEV_ENV
+          value: production
+        ports:
+        - containerPort: 19020
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      volumes:
+      - name: data
+        emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: learner
+  namespace: p2pfaas
+spec:
+  selector:
+    app: learner
+  ports:
+    - protocol: TCP
+      port: 19020
+      targetPort: 19020
+  type: ClusterIP
+
+---
+# apiVersion: apps/v1
+# kind: DaemonSet
+# metadata:
+#   name: fn-pigo
+#   namespace: p2pfaas
+# spec:
+#   selector:
+#     matchLabels:
+#       app: fn-pigo
+#   template:
+#     metadata:
+#       labels:
+#         app: fn-pigo
+#     spec:
+#       containers:
+#       - name: fn-pigo
+#         image: p2pfaas-fn-pigo:latest
+#         imagePullPolicy: IfNotPresent
+#         env:
+#         - name: output_mode
+#           value: "image"
+#         - name: input_mode
+#           value: "image"
+#         ports:
+#         - containerPort: 8080  # Added a default port if needed
