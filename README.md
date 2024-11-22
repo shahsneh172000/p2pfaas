@@ -29,6 +29,24 @@ A **peer-to-peer Function-as-a-Service (FaaS)** framework for decentralized sche
 
 ---
 
+
+## 🛠 Architecture Overview
+
+### Core Modules
+- **Scheduler Service**: Handles function execution requests and scheduling logic.
+- **Learner Service**: Manages Reinforcement Learning models.
+- **Discovery Service**: Discovers and manages neighboring nodes.
+
+### Operational Flow
+1. Client requests function execution (via REST API).
+2. Scheduler evaluates and forwards the task.
+3. Task is executed locally or remotely.
+4. RL-based schedulers update models post-execution.
+
+   [Learn more about architecture and workflow](https://www.sciencedirect.com/science/article/pii/S2352711022002084)
+
+---
+
 ## 🚀 Getting Started
 
 ### 1️⃣ Prerequisites
@@ -88,59 +106,48 @@ A **peer-to-peer Function-as-a-Service (FaaS)** framework for decentralized sche
    faas-cli store deploy figlet \
    --platform armhf
    ```
+   After installing and setting OpenFaaS, next step is to set up FaaS, go to [pigo-openfaas](https://github.com/esimov/pigo-openfaas) and follow the given steps.  
 
-
-
-2. Build the Docker containers:
+3. Build the Docker containers:
    ```bash
    docker-compose build
    ```
-3. Start the services:
+4. Start the services:
    ```bash
    docker-compose up
    ```
 
+   Once all three services are up:
+   - The Scheduler Service is accessible on port: 18080
+   - The Learner Service is accessible on port: 19020
+   - The Discovery Service is accessible on port: 19000
+
 ### 3️⃣ Configuration
-- Configure the Discovery Service:
-  - Use the API endpoint: `/configuration` at port `19000`.
+
+   
+   Clone [P2PFaaS](https://gitlab.com/p2p-faas/experiments) in your current folder. Go to `/machine-setup/python-scripts` to configure Discovery, Scheduler and Learner services.
+
+   Configure text files for all three services as per your nodes and assigned IP addresses.
+
+
 
 ---
 
-## 🛠 Architecture Overview
+## 📊 Benchmarks 
+- Tested on Local Device with single Node
+- Supports diverse real-world scenarios like **latency optimization** and **load balancing**
 
-### Core Modules
-- **Scheduler Service**: Handles function execution requests and scheduling logic.
-- **Learner Service**: Manages Reinforcement Learning models.
-- **Discovery Service**: Discovers and manages neighboring nodes.
-
-### Operational Flow
-1. Client requests function execution (via REST API).
-2. Scheduler evaluates and forwards the task.
-3. Task is executed locally or remotely.
-4. RL-based schedulers update models post-execution.
-
-![Architecture Diagram](https://your-diagram-link.com)
-
----
-
-## 📊 Benchmarks & Use Cases
-- Tested on **12 Raspberry Pi 4** devices using RL-based scheduling strategies.
-- Supports diverse real-world scenarios like **latency optimization** and **load balancing**.
-
----
-
-## 🛡 License
-This project is licensed under the **GPLv3 License**. See the [LICENSE](LICENSE) file for details.
+   | Algorithm          | Latency (ms) | Success Rate |
+   |--------------------|--------------|---------------------|
+   | Round Robin Scheduling  | 50          | 98.2%               |
+   | RL-based Scheduling| 36          | 96.3%               |
 
 ---
 
 ## 🤝 Contributing
 We welcome contributions! Feel free to submit issues or pull requests.
 
----
 
-## 📧 Support
-For questions or feedback, reach out to:
-- **Gabriele Proietti Mattia**: [proiettimattia@diag.uniroma1.it](mailto:proiettimattia@diag.uniroma1.it)
+
 
 Happy coding! 🚀
