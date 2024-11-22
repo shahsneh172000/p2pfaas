@@ -1,0 +1,4 @@
+docker-machine create --virtualbox-boot2docker-url "https://github.com/boot2docker/boot2docker/releases/download/v18.06.1-ce/boot2docker.iso" -d virtualbox p2pfogc0n0 
+docker-machine create --virtualbox-boot2docker-url "https://github.com/boot2docker/boot2docker/releases/download/v18.06.1-ce/boot2docker.iso" -d virtualbox p2pfogc1n0
+docker-machine create --virtualbox-boot2docker-url "https://github.com/boot2docker/boot2docker/releases/download/v18.06.1-ce/boot2docker.iso" -d virtualbox p2pfogc2n0
+docker-machine create --virtualbox-boot2docker-url "https://github.com/boot2docker/boot2docker/releases/download/v18.06.1-ce/boot2docker.iso" -d virtualbox p2pfogc3n0

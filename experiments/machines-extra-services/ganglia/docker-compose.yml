@@ -1,0 +1,11 @@
+version: "3.1"
+services:
+    ganglia:
+        container_name: ganglia
+        image: wookietreiber/ganglia
+        volumes:
+        - ./conf:/etc/ganglia
+        - ./ganglia:/var/lib/ganglia
+        environment:
+            TIMEZONE: Europe/Rome
+        network_mode: host

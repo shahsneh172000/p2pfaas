@@ -1,0 +1,18 @@
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+functions:
+  exponential-loop:
+    lang: go
+    handler: ./exponential-loop
+    image: exponential-loop:latest
+    labels:
+      # disable auto-scaling
+      com.openfaas.scale.min: 1
+      com.openfaas.scale.max: 1
+    environment:
+      write_timeout: "300"
+      read_timeout: "300"
+      mi: 0.30
+      loops_for_time_unit: 52725915
+      exponential_alfa: False

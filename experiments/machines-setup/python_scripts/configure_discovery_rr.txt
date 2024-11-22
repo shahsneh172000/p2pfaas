@@ -1,0 +1,4 @@
+proiettimattia-scheduler 192.168.49.2
+proiettimattia-p2pfogc101n0 192.168.49.4
+proiettimattia-p2pfogc102n0 192.168.49.15
+proiettimattia-p2pfogc103n0 192.168.49.32
